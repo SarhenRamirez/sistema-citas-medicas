@@ -1,29 +1,26 @@
 import { Request, Response, NextFunction } from "express";
-import { AppDataSource } from "../data/app.datasource";
-import { User } from "../entities/User";
-import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { AppError } from "../middleware/error.middleware";
+import { enviarEmailBienvenida } from "../services/email.service";
+import { validateCreateUserDto } from "../dtos/User.dto";
+import { validateLoginDto } from "../dtos/Credential.dto";
+import { createUser, getUserByCredentialsId } from "../services/users.service";
+import { checkCredentials } from "../services/credentials.service";
 
 export const register = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { nombre, email, password } = req.body;
+    const { name, email, birthdate, nDni, username, password } = req.body;
 
-    if (!nombre || !email || !password) {
-      throw new AppError("Todos los campos son obligatorios", 400);
-    }
+    const userError = validateCreateUserDto({ name, email, birthdate, nDni, username, password });
+    if (userError) throw new AppError(userError, 400);
 
-    const userRepo = AppDataSource.getRepository(User);
-    const existe = await userRepo.findOne({ where: { email } });
-    if (existe) throw new AppError("El usuario ya existe", 400);
+    const newUser = await createUser({ name, email, birthdate, nDni, username, password });
 
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const nuevoUsuario = userRepo.create({ nombre, email, password: hashedPassword });
-    await userRepo.save(nuevoUsuario);
+    enviarEmailBienvenida(newUser.email, newUser.name);
 
     res.status(201).json({
       message: "Usuario creado correctamente",
-      user: { id: nuevoUsuario.id, nombre: nuevoUsuario.nombre, email: nuevoUsuario.email },
+      user: { id: newUser.id, name: newUser.name, email: newUser.email },
     });
   } catch (error) {
     next(error);
@@ -32,31 +29,32 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
 
 export const login = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { email, password } = req.body;
+    const { username, password } = req.body;
 
-    if (!email || !password) throw new AppError("Email y password son obligatorios", 400);
+    const loginError = validateLoginDto({ username, password });
+    if (loginError) throw new AppError(loginError, 400);
 
-    const userRepo = AppDataSource.getRepository(User);
-    const user = await userRepo
-      .createQueryBuilder("user")
-      .addSelect("user.password")
-      .where("user.email = :email", { email })
-      .getOne();
+    const credentialsId = await checkCredentials(username, password);
+    if (!credentialsId) throw new AppError("Credenciales invalidas", 401);
 
-    if (!user) throw new AppError("Credenciales inválidas", 401);
-
-    const isValid = await bcrypt.compare(password, user.password);
-    if (!isValid) throw new AppError("Credenciales inválidas", 401);
+    const user = getUserByCredentialsId(credentialsId);
+    if (!user) throw new AppError("Credenciales invalidas", 401);
 
     const secret = process.env.JWT_SECRET;
-    if (!secret) throw new Error("JWT_SECRET no definido en variables de entorno");
+    if (!secret) throw new Error("JWT_SECRET no definido");
 
     const token = jwt.sign({ id: user.id, email: user.email }, secret, { expiresIn: "1d" });
 
     res.json({
-      message: "Login exitoso",
+      login: true,
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        birthdate: user.birthdate ?? null,
+        nDni: user.nDni ?? null,
+      },
       token,
-      user: { id: user.id, nombre: user.nombre, email: user.email },
     });
   } catch (error) {
     next(error);

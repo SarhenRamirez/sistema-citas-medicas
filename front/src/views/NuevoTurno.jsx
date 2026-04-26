@@ -4,13 +4,15 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import Swal from "sweetalert2";
 import { useTurnos } from "../context/TurnosContext";
+import { useUser } from "../context/UserContext";
 import { CalendarDays, Clock, CheckCircle } from "lucide-react";
 
 export default function NuevoTurno() {
   const navigate = useNavigate();
   const { agregarTurno } = useTurnos();
+  const { user } = useUser();
 
-  const [form, setForm] = useState({ fecha: "", hora: "" });
+  const [form, setForm] = useState({ date: "", time: "" });
   const [openHoras, setOpenHoras] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -29,11 +31,11 @@ export default function NuevoTurno() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!form.fecha || !form.hora) {
+    if (!form.date || !form.time) {
       return Swal.fire({ icon: "warning", title: "Campos incompletos", text: "Selecciona una fecha y una hora" });
     }
     setLoading(true);
-    const resultado = await agregarTurno(form.fecha, form.hora);
+    const resultado = await agregarTurno(form.date, form.time, user?.id);
     setLoading(false);
     if (!resultado.ok) {
       return Swal.fire({ icon: "error", title: "Error", text: resultado.message });
@@ -61,11 +63,11 @@ export default function NuevoTurno() {
               <CalendarDays size={16} color="#1d4ed8" /> Fecha
             </label>
             <DatePicker
-              selected={form.fecha ? new Date(form.fecha + "T12:00:00") : null}
+              selected={form.date ? new Date(form.date + "T12:00:00") : null}
               onChange={(date) => {
                 const offset = date.getTimezoneOffset();
                 const fechaCorregida = new Date(date.getTime() - offset * 60000);
-                setForm({ ...form, fecha: fechaCorregida.toISOString().split("T")[0], hora: "" });
+                setForm({ ...form, date: fechaCorregida.toISOString().split("T")[0], time: "" });
               }}
               minDate={hoy}
               filterDate={(date) => date.getDay() !== 0 && date.getDay() !== 6}
@@ -95,7 +97,7 @@ export default function NuevoTurno() {
                 cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "space-between"
               }}
             >
-              {form.hora || "Selecciona una hora"}
+              {form.time || "Selecciona una hora"}
               <Clock size={16} color="#94a3b8" />
             </button>
 
@@ -110,13 +112,13 @@ export default function NuevoTurno() {
                     <button
                       key={hora}
                       type="button"
-                      onClick={() => { setForm({ ...form, hora }); setOpenHoras(false); }}
+                      onClick={() => { setForm({ ...form, time: hora }); setOpenHoras(false); }}
                       style={{
                         padding: "7px 4px", borderRadius: "8px", fontSize: "0.8rem",
                         fontWeight: 500, cursor: "pointer", transition: "all 0.15s",
-                        border: form.hora === hora ? "none" : "1px solid #e2e8f0",
-                        background: form.hora === hora ? "#1d4ed8" : "white",
-                        color: form.hora === hora ? "white" : "#374151"
+                        border: form.time === hora ? "none" : "1px solid #e2e8f0",
+                        background: form.time === hora ? "#1d4ed8" : "white",
+                        color: form.time === hora ? "white" : "#374151"
                       }}
                     >
                       {hora}
@@ -127,11 +129,11 @@ export default function NuevoTurno() {
             )}
           </div>
 
-          {form.fecha && form.hora && (
+          {form.date && form.time && (
             <div style={{ background: "#eff6ff", border: "1px solid #bfdbfe", borderRadius: "12px", padding: "1rem", display: "flex", alignItems: "center", gap: "10px" }}>
               <CheckCircle size={18} color="#1d4ed8" />
               <p style={{ fontSize: "0.9rem", color: "#1d4ed8", fontWeight: 500 }}>
-                Turno el <strong>{form.fecha}</strong> a las <strong>{form.hora} hs</strong>
+                Turno el <strong>{form.date}</strong> a las <strong>{form.time} hs</strong>
               </p>
             </div>
           )}

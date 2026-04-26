@@ -30,9 +30,9 @@ export function TurnosProvider({ children }) {
     cargarTurnos();
   }, []);
 
-  const agregarTurno = async (fecha, hora) => {
+  const agregarTurno = async (fecha, hora, userId) => {
     try {
-      const res = await crearTurno({ fecha, hora });
+      const res = await crearTurno({ date: fecha, time: hora, userId });
       setTurnos((prev) => [...prev, res.data.turno]);
       return { ok: true };
     } catch (err) {
@@ -47,7 +47,7 @@ export function TurnosProvider({ children }) {
     try {
       await cancelarTurnoApi(id);
       setTurnos((prev) =>
-        prev.map((t) => (t.id === id ? { ...t, estado: "cancelado" } : t))
+        prev.map((t) => (t.id === id ? { ...t, status: "cancelled" } : t))
       );
       return { ok: true };
     } catch (err) {

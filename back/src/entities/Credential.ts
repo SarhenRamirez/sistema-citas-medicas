@@ -3,12 +3,12 @@ import {
   PrimaryGeneratedColumn,
   Column,
   OneToOne,
-  JoinColumn,
 } from "typeorm";
 import { User } from "./User";
+import { ICredential } from "../interfaces/ICredential";
 
 @Entity()
-export class Credential {
+export class Credential implements ICredential {
   @PrimaryGeneratedColumn()
   id!: number;
 
@@ -19,6 +19,5 @@ export class Credential {
   password!: string;
 
   @OneToOne(() => User, (user) => user.credential)
-  @JoinColumn()
   user!: User;
 }

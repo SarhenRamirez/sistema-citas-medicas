@@ -4,31 +4,31 @@ import {
   Column,
   ManyToOne,
   CreateDateColumn,
+  RelationId,
 } from "typeorm";
 import { User } from "./User";
-
-export type EstadoTurno = "agendado" | "cancelado";
+import { IAppointment, AppointmentStatus } from "../interfaces/IAppointment";
 
 @Entity()
-export class Turno {
+export class Turno implements IAppointment {
   @PrimaryGeneratedColumn()
   id!: number;
 
   @Column()
-  fecha!: string; 
+  date!: string;
 
   @Column()
-  hora!: string; 
+  time!: string;
 
-  @Column({
-    type: "varchar",
-    default: "agendado",
-  })
-  estado!: EstadoTurno;
+  @Column({ type: "varchar", default: "active" })
+  status!: AppointmentStatus;
 
   @CreateDateColumn()
   creadoEn!: Date;
 
   @ManyToOne(() => User, (user) => user.turnos, { eager: true })
   user!: User;
+
+  @RelationId((turno: Turno) => turno.user)
+  userId!: number;
 }

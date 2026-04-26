@@ -11,3 +11,7 @@ npm-debug.log*
 # Sistema operativo
 .DS_Store
 Thumbs.db
+
+# Build
+back/dist/
+

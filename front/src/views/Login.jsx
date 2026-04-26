@@ -3,11 +3,11 @@ import { NavLink, useNavigate, Navigate } from "react-router-dom";
 import { useUser } from "../context/UserContext";
 import { useTurnos } from "../context/TurnosContext";
 import { loginUser, setToken } from "../services/api";
-import { LogIn, Mail, Lock, Stethoscope, CalendarDays, CheckCircle } from "lucide-react";
+import { LogIn, AtSign, Lock, Stethoscope, CalendarDays, CheckCircle } from "lucide-react";
 import logo from "../assets/logo.png";
 
 export default function Login() {
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -20,14 +20,14 @@ export default function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!email || !password) {
-      setError("Email y contrasena son obligatorios");
+    if (!username || !password) {
+      setError("Usuario y contraseña son obligatorios");
       return;
     }
     try {
       setLoading(true);
       setError("");
-      const response = await loginUser({ email, password });
+      const response = await loginUser({ username, password });
       setToken(response.data.token);
       login(response.data.user);
       await cargarTurnos();
@@ -83,7 +83,7 @@ export default function Login() {
         <div style={{ width: "100%", maxWidth: "420px" }}>
           <div style={{ marginBottom: "2rem" }}>
             <h1 style={{ fontSize: "1.75rem", fontWeight: 800, color: "#0f172a", marginBottom: "8px" }}>Iniciar sesion</h1>
-            <p style={{ color: "#64748b", fontSize: "0.95rem" }}>Ingresa tu email y contraseña para continuar</p>
+            <p style={{ color: "#64748b", fontSize: "0.95rem" }}>Ingresa tu usuario y contraseña para continuar</p>
           </div>
 
           {error && (
@@ -95,13 +95,13 @@ export default function Login() {
           <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
             <div style={{ position: "relative" }}>
               <div style={{ position: "absolute", left: "14px", top: "50%", transform: "translateY(-50%)", color: "#94a3b8" }}>
-                <Mail size={18} />
+                <AtSign size={18} />
               </div>
               <input
-                type="email"
-                placeholder="correo@ejemplo.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                type="text"
+                placeholder="Nombre de usuario"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
                 disabled={loading}
                 style={{ width: "100%", padding: "12px 14px 12px 44px", border: "1px solid #e2e8f0", borderRadius: "10px", fontSize: "0.95rem", outline: "none", background: "white", boxSizing: "border-box", color: "#0f172a" }}
               />

@@ -5,7 +5,6 @@ import dotenv from "dotenv";
 import morgan from "morgan";
 
 import { AppDataSource } from "./data/app.datasource";
-import authRoutes from "./routes/auth.routes";
 import turnosRoutes from "./routes/turnos.routes";
 import usuariosRoutes from "./routes/usuarios.routes";
 import { errorMiddleware } from "./middleware/error.middleware";
@@ -15,11 +14,10 @@ dotenv.config();
 const app = express();
 app.use(cors());
 app.use(express.json());
-app.use(morgan("dev")); 
+app.use(morgan("dev"));
 
-app.use("/api/auth", authRoutes);
-app.use("/api/turnos", turnosRoutes);
-app.use("/api/usuarios", usuariosRoutes);
+app.use("/api/users", usuariosRoutes);
+app.use("/api/appointments", turnosRoutes);
 
 app.use(errorMiddleware);
 

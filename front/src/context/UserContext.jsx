@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState, useEffect } from "react";
 
 const UserContext = createContext();
 
@@ -16,7 +16,7 @@ export function UserProvider({ children }) {
   const login = (data) => {
     guardarUsuario({
       id: data.id,
-      nombre: data.nombre,
+      name: data.name,
       email: data.email,
       avatar: null,
     });
@@ -27,6 +27,12 @@ export function UserProvider({ children }) {
     localStorage.removeItem("user");
     localStorage.removeItem("token");
   };
+
+  useEffect(() => {
+    const handleSessionExpired = () => setUser(null);
+    window.addEventListener("session-expired", handleSessionExpired);
+    return () => window.removeEventListener("session-expired", handleSessionExpired);
+  }, []);
 
   const actualizarFoto = (file) => {
     const reader = new FileReader();

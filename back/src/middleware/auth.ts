@@ -20,6 +20,9 @@ export const authMiddleware = (req: Request, res: Response, next: NextFunction) 
     req.user = { id: decoded.id, email: decoded.email };
     next();
   } catch (error) {
+    if (error instanceof jwt.JsonWebTokenError) {
+      return next(new AppError("Token invalido o expirado", 401));
+    }
     next(error);
   }
 };

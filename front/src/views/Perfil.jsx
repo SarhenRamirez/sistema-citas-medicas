@@ -62,7 +62,7 @@ export default function Perfil() {
           </div>
 
           <div style={{ textAlign: "center", color: "white" }}>
-            <p style={{ fontSize: "1.25rem", fontWeight: 700 }}>{user?.nombre}</p>
+            <p style={{ fontSize: "1.25rem", fontWeight: 700 }}>{user?.name}</p>
             <p style={{ fontSize: "0.875rem", opacity: 0.75, marginTop: "2px" }}>{user?.email}</p>
           </div>
         </div>
@@ -75,7 +75,7 @@ export default function Perfil() {
             </div>
             <div>
               <p style={{ fontSize: "0.75rem", color: "#94a3b8", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em" }}>Nombre</p>
-              <p style={{ fontSize: "1rem", fontWeight: 600, color: "#0f172a", marginTop: "2px" }}>{user?.nombre}</p>
+              <p style={{ fontSize: "1rem", fontWeight: 600, color: "#0f172a", marginTop: "2px" }}>{user?.name}</p>
             </div>
           </div>
 

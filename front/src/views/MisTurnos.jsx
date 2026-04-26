@@ -1,14 +1,15 @@
 import { NavLink } from "react-router-dom";
 import { useTurnos } from "../context/TurnosContext";
 import Loader from "../components/Loader";
+import Card from "../components/Card";
 import Swal from "sweetalert2";
-import { CalendarDays, Clock, XCircle } from "lucide-react";
+import { CalendarDays, Clock } from "lucide-react";
 
 export default function MisTurnos() {
   const { turnos, cancelarTurno, loading, error } = useTurnos();
 
-  const turnosActivos = turnos.filter((t) => t.estado === "agendado");
-  const turnosCancelados = turnos.filter((t) => t.estado === "cancelado");
+  const turnosActivos = turnos.filter((t) => t.status === "active");
+  const turnosCancelados = turnos.filter((t) => t.status === "cancelled");
 
   const handleCancelar = (id) => {
     Swal.fire({
@@ -67,32 +68,7 @@ export default function MisTurnos() {
         ) : (
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: "1rem" }}>
             {turnosActivos.map((turno) => (
-              <div key={turno.id} style={{ background: "white", borderRadius: "16px", padding: "1.5rem", border: "1px solid #e2e8f0", boxShadow: "0 1px 3px rgba(0,0,0,0.05)" }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "1rem" }}>
-                  <span style={{ fontSize: "0.75rem", color: "#94a3b8", fontWeight: 600 }}>Turno #{turno.id}</span>
-                  <span style={{ background: "#dcfce7", color: "#16a34a", fontSize: "0.75rem", fontWeight: 700, padding: "4px 10px", borderRadius: "999px" }}>
-                    Agendado
-                  </span>
-                </div>
-                <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginBottom: "1.25rem" }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: "8px", color: "#374151", fontSize: "0.9rem" }}>
-                    <CalendarDays size={15} color="#1d4ed8" />
-                    <strong>{turno.fecha}</strong>
-                  </div>
-                  <div style={{ display: "flex", alignItems: "center", gap: "8px", color: "#374151", fontSize: "0.9rem" }}>
-                    <Clock size={15} color="#1d4ed8" />
-                    <strong>{turno.hora} hs</strong>
-                  </div>
-                </div>
-                <button
-                  onClick={() => handleCancelar(turno.id)}
-                  style={{ width: "100%", padding: "9px", border: "1px solid #fca5a5", color: "#ef4444", background: "transparent", borderRadius: "8px", fontSize: "0.875rem", fontWeight: 600, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: "6px", transition: "all 0.2s" }}
-                  onMouseEnter={e => { e.currentTarget.style.background = "#fef2f2"; }}
-                  onMouseLeave={e => { e.currentTarget.style.background = "transparent"; }}
-                >
-                  <XCircle size={15} /> Cancelar cita
-                </button>
-              </div>
+              <Card key={turno.id} turno={turno} onCancelar={handleCancelar} />
             ))}
           </div>
         )}
@@ -111,24 +87,7 @@ export default function MisTurnos() {
         ) : (
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: "1rem" }}>
             {turnosCancelados.map((turno) => (
-              <div key={turno.id} style={{ background: "#f8fafc", borderRadius: "16px", padding: "1.5rem", border: "1px solid #e2e8f0" }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "1rem" }}>
-                  <span style={{ fontSize: "0.75rem", color: "#94a3b8", fontWeight: 600 }}>Turno #{turno.id}</span>
-                  <span style={{ background: "#fee2e2", color: "#ef4444", fontSize: "0.75rem", fontWeight: 700, padding: "4px 10px", borderRadius: "999px" }}>
-                    Cancelado
-                  </span>
-                </div>
-                <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: "8px", color: "#64748b", fontSize: "0.9rem" }}>
-                    <CalendarDays size={15} color="#94a3b8" />
-                    {turno.fecha}
-                  </div>
-                  <div style={{ display: "flex", alignItems: "center", gap: "8px", color: "#64748b", fontSize: "0.9rem" }}>
-                    <Clock size={15} color="#94a3b8" />
-                    {turno.hora} hs
-                  </div>
-                </div>
-              </div>
+              <Card key={turno.id} turno={turno} />
             ))}
           </div>
         )}

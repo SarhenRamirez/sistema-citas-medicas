@@ -8,6 +8,8 @@ interface EnvVars {
   DB_PASSWORD: string;
   DB_NAME: string;
   JWT_SECRET: string;
+  EMAIL_USER: string;
+  EMAIL_PASS: string;
 }
 
 const envs: EnvVars = {
@@ -18,6 +20,8 @@ const envs: EnvVars = {
   DB_PASSWORD: process.env.DB_PASSWORD || "",
   DB_NAME: process.env.DB_NAME || "meditom",
   JWT_SECRET: process.env.JWT_SECRET!,
+  EMAIL_USER: process.env.EMAIL_USER || "",
+  EMAIL_PASS: process.env.EMAIL_PASS || "",
 };
 
 if (!envs.JWT_SECRET) {
