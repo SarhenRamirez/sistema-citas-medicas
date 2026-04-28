@@ -1,25 +1,26 @@
+import { AppDataSource } from "../data/app.datasource";
+import { Turno } from "../entities/Turno";
+import { User } from "../entities/User";
 import { IAppointment } from "../interfaces/IAppointment";
 import { AppError } from "../middleware/error.middleware";
 
-const appointments: IAppointment[] = [
-  { id: 1, date: "2026-04-28", time: "09:00",  userId: 1, status: "active"    },
-  { id: 2, date: "2026-04-29", time: "10:20",  userId: 2, status: "active"    },
-  { id: 3, date: "2026-04-30", time: "14:00",  userId: 1, status: "cancelled" },
-  { id: 4, date: "2026-05-02", time: "08:00",  userId: 3, status: "active"    },
-  { id: 5, date: "2026-05-05", time: "16:40",  userId: 2, status: "cancelled" },
-];
+const repo = () => AppDataSource.getRepository(Turno);
 
-let nextId = appointments.length + 1;
+export const getAllAppointments = async (): Promise<Turno[]> => repo().find();
 
-export const getAllAppointments = (): IAppointment[] => appointments;
+export const getAppointmentById = async (id: number): Promise<Turno | undefined> => {
+  const turno = await repo().findOne({ where: { id } });
+  return turno ?? undefined;
+};
 
-export const getAppointmentById = (id: number): IAppointment | undefined =>
-  appointments.find((a) => a.id === id);
+export const getAppointmentsByUserId = async (userId: number): Promise<Turno[]> =>
+  repo().find({ where: { user: { id: userId } } });
 
-export const getAppointmentsByUserId = (userId: number): IAppointment[] =>
-  appointments.filter((a) => a.userId === userId);
-
-export const createAppointment = (date: string, time: string, userId: number): IAppointment => {
+export const createAppointment = async (
+  date: string,
+  time: string,
+  userId: number
+): Promise<Turno> => {
   if (!userId) throw new AppError("No se puede crear un turno sin ID de usuario", 400);
 
   const [anio, mes, dia] = date.split("-").map(Number);
@@ -28,7 +29,7 @@ export const createAppointment = (date: string, time: string, userId: number): I
   hoy.setHours(0, 0, 0, 0);
 
   if (fechaTurno <= hoy)
-    throw new AppError("Solo se pueden agendar turnos a partir de mañana", 400);
+    throw new AppError("Solo se pueden agendar turnos a partir de manana", 400);
 
   const diaSemana = fechaTurno.getDay();
   if (diaSemana === 0 || diaSemana === 6)
@@ -38,19 +39,24 @@ export const createAppointment = (date: string, time: string, userId: number): I
   if (hora < 6 || hora > 17 || (hora === 17 && minuto > 0))
     throw new AppError("El horario permitido es de 06:00 a 17:00", 400);
 
-  if (appointments.some((a) => a.date === date && a.time === time && a.status === "active"))
-    throw new AppError("Ese horario ya se encuentra ocupado", 400);
+  const conflict = await repo().findOne({ where: { date, time, status: "active" } });
+  if (conflict) throw new AppError("Ese horario ya se encuentra ocupado", 400);
 
-  const newAppointment: IAppointment = { id: nextId++, date, time, userId, status: "active" };
-  appointments.push(newAppointment);
-  return newAppointment;
+  const newTurno = repo().create({
+    date,
+    time,
+    status: "active",
+    user: { id: userId } as User,
+  });
+
+  return repo().save(newTurno);
 };
 
-export const cancelAppointment = (id: number, userId: number): IAppointment => {
-  const appointment = appointments.find((a) => a.id === id);
-  if (!appointment) throw new AppError("Turno no encontrado", 404);
-  if (appointment.userId !== userId) throw new AppError("No autorizado", 403);
-  if (appointment.status === "cancelled") throw new AppError("El turno ya está cancelado", 400);
-  appointment.status = "cancelled";
-  return appointment;
+export const cancelAppointment = async (id: number, userId: number): Promise<Turno> => {
+  const turno = await repo().findOne({ where: { id } });
+  if (!turno) throw new AppError("Turno no encontrado", 404);
+  if (!turno.user || turno.user.id !== userId) throw new AppError("No autorizado", 403);
+  if (turno.status === "cancelled") throw new AppError("El turno ya esta cancelado", 400);
+  turno.status = "cancelled";
+  return repo().save(turno);
 };

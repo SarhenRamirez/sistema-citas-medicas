@@ -1,22 +1,21 @@
-import { IUser } from "../interfaces/IUser";
+import { AppDataSource } from "../data/app.datasource";
+import { User } from "../entities/User";
 import { crearCredencial, usernameExists } from "./credentials.service";
 import { AppError } from "../middleware/error.middleware";
 
-const users: IUser[] = [
-  { id: 1, name: "Carlos Gómez",   email: "carlos@mail.com",  birthdate: "1990-05-15", nDni: 12345678, credentialsId: 1 },
-  { id: 2, name: "Ana García",     email: "ana@mail.com",     birthdate: "1985-11-30", nDni: 87654321, credentialsId: 2 },
-  { id: 3, name: "Miguel Torres",  email: "miguel@mail.com",  birthdate: "1995-03-22", nDni: 11223344, credentialsId: 3 },
-];
+const repo = () => AppDataSource.getRepository(User);
 
-let nextId = users.length + 1;
+export const getAllUsers = async (): Promise<User[]> => repo().find();
 
-export const getAllUsers = (): IUser[] => users;
+export const getUserById = async (id: number): Promise<User | undefined> => {
+  const user = await repo().findOne({ where: { id } });
+  return user ?? undefined;
+};
 
-export const getUserById = (id: number): IUser | undefined =>
-  users.find((u) => u.id === id);
-
-export const getUserByCredentialsId = (credentialsId: number): IUser | undefined =>
-  users.find((u) => u.credentialsId === credentialsId);
+export const getUserByCredentialsId = async (credentialsId: number): Promise<User | undefined> => {
+  const user = await repo().findOne({ where: { credentialsId } });
+  return user ?? undefined;
+};
 
 export const createUser = async (data: {
   name: string;
@@ -25,21 +24,22 @@ export const createUser = async (data: {
   nDni?: number;
   username: string;
   password: string;
-}): Promise<IUser> => {
-  if (users.some((u) => u.email === data.email))
-    throw new AppError("El email ya está registrado", 400);
-  if (usernameExists(data.username))
-    throw new AppError("El username ya está en uso", 400);
+}): Promise<User> => {
+  if (await repo().findOne({ where: { email: data.email } }))
+    throw new AppError("El email ya esta registrado", 400);
+
+  if (await usernameExists(data.username))
+    throw new AppError("El username ya esta en uso", 400);
 
   const credentialsId = await crearCredencial(data.username, data.password);
-  const newUser: IUser = {
-    id: nextId++,
+
+  const newUser = repo().create({
     name: data.name,
     email: data.email,
     birthdate: data.birthdate ?? null,
     nDni: data.nDni ?? null,
     credentialsId,
-  };
-  users.push(newUser);
-  return newUser;
+  });
+
+  return repo().save(newUser);
 };

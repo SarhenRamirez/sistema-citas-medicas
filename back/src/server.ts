@@ -16,8 +16,9 @@ app.use(cors());
 app.use(express.json());
 app.use(morgan("dev"));
 
-app.use("/api/users", usuariosRoutes);
-app.use("/api/appointments", turnosRoutes);
+app.use("/user", usuariosRoutes);
+app.use("/users", usuariosRoutes);
+app.use("/turns", turnosRoutes);
 
 app.use(errorMiddleware);
 

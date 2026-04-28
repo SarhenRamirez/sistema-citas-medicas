@@ -5,7 +5,7 @@ import { getAppointmentsByUserId } from "../services/appointments.service";
 
 export const getAllUsersController = async (_req: Request, res: Response, next: NextFunction) => {
   try {
-    res.json(getAllUsers());
+    res.json(await getAllUsers());
   } catch (error) {
     next(error);
   }
@@ -13,19 +13,19 @@ export const getAllUsersController = async (_req: Request, res: Response, next: 
 
 export const getUserByIdController = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const user = getUserById(Number(req.params.id));
+    const user = await getUserById(Number(req.params.id));
     if (!user) throw new AppError("Usuario no encontrado", 404);
 
-    const turns = getAppointmentsByUserId(user.id);
+    const turns = await getAppointmentsByUserId(user.id);
     res.json({ ...user, turns });
   } catch (error) {
     next(error);
   }
 };
 
-export const getPerfil = (req: Request, res: Response, next: NextFunction) => {
+export const getPerfil = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const user = getUserById(req.user!.id);
+    const user = await getUserById(req.user!.id);
     if (!user) throw new AppError("Usuario no encontrado", 404);
     res.json({ message: `Bienvenido ${user.name}`, user });
   } catch (error) {

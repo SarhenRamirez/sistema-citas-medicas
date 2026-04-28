@@ -18,28 +18,29 @@ export const crearTurno = async (req: Request, res: Response, next: NextFunction
 
     const { date, time } = req.body;
     const userId = req.user!.id;
-    const turno = createAppointment(date, time, userId);
+    const turno = await createAppointment(date, time, userId);
 
-    const user = getUserById(userId);
+    const user = await getUserById(userId);
     if (user) enviarEmailTurnoCreado(user.email, user.name, turno.date, turno.time);
 
-    res.status(201).json({ message: "Turno agendado correctamente", turno });
+    const { user: _u, creadoEn: _c, ...turnoLimpio } = turno;
+    res.status(201).json({ message: "Turno agendado correctamente", turno: turnoLimpio });
   } catch (error) {
     next(error);
   }
 };
 
-export const obtenerMisTurnos = (req: Request, res: Response, next: NextFunction) => {
+export const obtenerMisTurnos = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    res.json(getAppointmentsByUserId(req.user!.id));
+    res.json(await getAppointmentsByUserId(req.user!.id));
   } catch (error) {
     next(error);
   }
 };
 
-export const obtenerTurnoPorId = (req: Request, res: Response, next: NextFunction) => {
+export const obtenerTurnoPorId = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const turno = getAppointmentById(Number(req.params.id));
+    const turno = await getAppointmentById(Number(req.params.id));
     if (!turno) throw new AppError("Turno no encontrado", 404);
     res.json(turno);
   } catch (error) {
@@ -47,11 +48,11 @@ export const obtenerTurnoPorId = (req: Request, res: Response, next: NextFunctio
   }
 };
 
-export const cancelarTurno = (req: Request, res: Response, next: NextFunction) => {
+export const cancelarTurno = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const turno = cancelAppointment(Number(req.params.id), req.user!.id);
+    const turno = await cancelAppointment(Number(req.params.id), req.user!.id);
 
-    const user = getUserById(req.user!.id);
+    const user = await getUserById(req.user!.id);
     if (user) enviarEmailTurnoCancelado(user.email, user.name, turno.date, turno.time);
 
     res.json({ message: "Turno cancelado correctamente", turno });
@@ -60,9 +61,9 @@ export const cancelarTurno = (req: Request, res: Response, next: NextFunction) =
   }
 };
 
-export const obtenerTodosTurnos = (_req: Request, res: Response, next: NextFunction) => {
+export const obtenerTodosTurnos = async (_req: Request, res: Response, next: NextFunction) => {
   try {
-    res.json(getAllAppointments());
+    res.json(await getAllAppointments());
   } catch (error) {
     next(error);
   }

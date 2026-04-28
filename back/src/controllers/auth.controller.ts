@@ -37,7 +37,7 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
     const credentialsId = await checkCredentials(username, password);
     if (!credentialsId) throw new AppError("Credenciales invalidas", 401);
 
-    const user = getUserByCredentialsId(credentialsId);
+    const user = await getUserByCredentialsId(credentialsId);
     if (!user) throw new AppError("Credenciales invalidas", 401);
 
     const secret = process.env.JWT_SECRET;
