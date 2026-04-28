@@ -310,6 +310,7 @@ El token expira en **24 horas**. Si expira, el frontend redirige automaticamente
 | `id` | `integer PK` | Identificador unico |
 | `date` | `varchar` | Fecha en formato `YYYY-MM-DD` |
 | `time` | `varchar` | Hora en formato `HH:mm` |
+| `specialty` | `varchar` | Especialidad medica del turno |
 | `status` | `varchar` | `active` o `cancelled` |
 | `userId` | `integer FK` | Referencia al usuario dueno |
 
@@ -320,8 +321,9 @@ El token expira en **24 horas**. Si expira, el frontend redirige automaticamente
 - Solo se pueden agendar turnos a partir del **dia siguiente**
 - No se permiten turnos en **fines de semana**
 - El horario disponible es de **06:00 a 17:00**
-- No puede haber **dos turnos activos en el mismo horario**
+- Multiples usuarios pueden agendar el mismo horario (recursos infinitos)
 - Solo el **dueno del turno** puede cancelarlo
+- Solo se puede cancelar un turno **hasta el dia anterior** a la fecha reservada
 
 ---
 

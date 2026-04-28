@@ -2,11 +2,11 @@ import { useState } from "react";
 import { NavLink, useNavigate, Navigate } from "react-router-dom";
 import { useUser } from "../context/UserContext";
 import { registerUser } from "../services/api";
-import { UserPlus, Mail, Lock, User, Stethoscope, CalendarDays, CheckCircle } from "lucide-react";
+import { UserPlus, Mail, Lock, User, AtSign, Stethoscope, CalendarDays, CheckCircle } from "lucide-react";
 import logo from "../assets/logo.png";
 
 export default function Register() {
-  const [form, setForm] = useState({ name: "", email: "", password: "", confirmPassword: "" });
+  const [form, setForm] = useState({ name: "", username: "", email: "", password: "", confirmPassword: "" });
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
@@ -19,7 +19,7 @@ export default function Register() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!form.name || !form.email || !form.password || !form.confirmPassword) {
+    if (!form.name || !form.username || !form.email || !form.password || !form.confirmPassword) {
       setError("Todos los campos son obligatorios");
       return;
     }
@@ -31,7 +31,7 @@ export default function Register() {
       setLoading(true);
       setError("");
       setSuccess("");
-      await registerUser({ name: form.name, email: form.email, password: form.password });
+      await registerUser({ name: form.name, username: form.username, email: form.email, password: form.password });
       setSuccess("Cuenta creada correctamente. Redirigiendo...");
       setTimeout(() => navigate("/login"), 1500);
     } catch (err) {
@@ -103,6 +103,7 @@ export default function Register() {
           <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
             {[
               { name: "name", placeholder: "Nombre completo", type: "text", icon: <User size={18} /> },
+              { name: "username", placeholder: "Nombre de usuario", type: "text", icon: <AtSign size={18} /> },
               { name: "email", placeholder: "correo@ejemplo.com", type: "email", icon: <Mail size={18} /> },
               { name: "password", placeholder: "Contraseña", type: "password", icon: <Lock size={18} /> },
               { name: "confirmPassword", placeholder: "Confirmar contraseña", type: "password", icon: <Lock size={18} /> },

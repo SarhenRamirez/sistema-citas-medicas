@@ -40,9 +40,6 @@ export const createAppointment = async (
   if (hora < 6 || hora > 17 || (hora === 17 && minuto > 0))
     throw new AppError("El horario permitido es de 06:00 a 17:00", 400);
 
-  const conflict = await repo().findOne({ where: { date, time, status: "active" } });
-  if (conflict) throw new AppError("Ese horario ya se encuentra ocupado", 400);
-
   const newTurno = repo().create({
     date,
     time,
@@ -59,6 +56,13 @@ export const cancelAppointment = async (id: number, userId: number): Promise<Tur
   if (!turno) throw new AppError("Turno no encontrado", 404);
   if (!turno.user || turno.user.id !== userId) throw new AppError("No autorizado", 403);
   if (turno.status === "cancelled") throw new AppError("El turno ya esta cancelado", 400);
+
+  const [anio, mes, dia] = turno.date.split("-").map(Number);
+  const fechaTurno = new Date(anio, mes - 1, dia);
+  const hoy = new Date();
+  hoy.setHours(0, 0, 0, 0);
+  if (fechaTurno <= hoy) throw new AppError("Solo puedes cancelar un turno hasta el dia anterior", 400);
+
   turno.status = "cancelled";
   return repo().save(turno);
 };
