@@ -255,7 +255,7 @@ Disponible en `http://localhost:5173`.
 
 | Metodo | Endpoint | Auth | Descripcion |
 |---|---|---|---|
-| `POST` | `/users/register` | No | Registrar nuevo usuario |
+| `POST` | `/user/register` | No | Registrar nuevo usuario |
 | `POST` | `/users/login` | No | Iniciar sesion — devuelve JWT |
 | `GET` | `/users/` | JWT | Obtener todos los usuarios |
 | `GET` | `/users/perfil` | JWT | Ver perfil del usuario logueado |

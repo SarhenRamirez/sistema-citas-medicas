@@ -40,6 +40,12 @@ export const createAppointment = async (
   if (hora < 6 || hora > 17 || (hora === 17 && minuto > 0))
     throw new AppError("El horario permitido es de 06:00 a 17:00", 400);
 
+  const turnoExistente = await repo().findOne({
+    where: { date, time, status: "active", user: { id: userId } },
+  });
+  if (turnoExistente)
+    throw new AppError("Ya tienes un turno activo en ese horario", 400);
+
   const newTurno = repo().create({
     date,
     time,
