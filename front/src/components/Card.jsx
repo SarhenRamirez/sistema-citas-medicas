@@ -1,4 +1,4 @@
-import { CalendarDays, Clock, XCircle } from "lucide-react";
+import { CalendarDays, Clock, XCircle, Stethoscope } from "lucide-react";
 
 export default function Card({ turno, onCancelar }) {
   const isActive = turno.status === "active";
@@ -23,6 +23,12 @@ export default function Card({ turno, onCancelar }) {
       </div>
 
       <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginBottom: isActive ? "1.25rem" : 0 }}>
+        {turno.specialty && (
+          <div style={{ display: "flex", alignItems: "center", gap: "8px", color: isActive ? "#374151" : "#64748b", fontSize: "0.9rem" }}>
+            <Stethoscope size={15} color={isActive ? "#1d4ed8" : "#94a3b8"} />
+            {isActive ? <strong>{turno.specialty}</strong> : turno.specialty}
+          </div>
+        )}
         <div style={{ display: "flex", alignItems: "center", gap: "8px", color: isActive ? "#374151" : "#64748b", fontSize: "0.9rem" }}>
           <CalendarDays size={15} color={isActive ? "#1d4ed8" : "#94a3b8"} />
           {isActive ? <strong>{turno.date}</strong> : turno.date}

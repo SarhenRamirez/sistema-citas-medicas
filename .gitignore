@@ -15,3 +15,6 @@ Thumbs.db
 # Build
 back/dist/
 
+# Claude Code
+.claude/settings.local.json
+

@@ -5,14 +5,27 @@ import "react-datepicker/dist/react-datepicker.css";
 import Swal from "sweetalert2";
 import { useTurnos } from "../context/TurnosContext";
 import { useUser } from "../context/UserContext";
-import { CalendarDays, Clock, CheckCircle } from "lucide-react";
+import { CalendarDays, Clock, CheckCircle, Stethoscope } from "lucide-react";
+
+const ESPECIALIDADES = [
+  "Medicina general",
+  "Pediatria",
+  "Cardiologia",
+  "Dermatologia",
+  "Ginecologia",
+  "Odontologia",
+  "Oftalmologia",
+  "Traumatologia",
+  "Neurologia",
+  "Psicologia",
+];
 
 export default function NuevoTurno() {
   const navigate = useNavigate();
   const { agregarTurno } = useTurnos();
   const { user } = useUser();
 
-  const [form, setForm] = useState({ date: "", time: "" });
+  const [form, setForm] = useState({ date: "", time: "", specialty: "" });
   const [openHoras, setOpenHoras] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -31,11 +44,11 @@ export default function NuevoTurno() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!form.date || !form.time) {
-      return Swal.fire({ icon: "warning", title: "Campos incompletos", text: "Selecciona una fecha y una hora" });
+    if (!form.date || !form.time || !form.specialty) {
+      return Swal.fire({ icon: "warning", title: "Campos incompletos", text: "Selecciona una especialidad, fecha y hora" });
     }
     setLoading(true);
-    const resultado = await agregarTurno(form.date, form.time, user?.id);
+    const resultado = await agregarTurno(form.date, form.time, user?.id, form.specialty);
     setLoading(false);
     if (!resultado.ok) {
       return Swal.fire({ icon: "error", title: "Error", text: resultado.message });
@@ -57,6 +70,27 @@ export default function NuevoTurno() {
 
       <div style={{ background: "white", borderRadius: "20px", border: "1px solid #e2e8f0", padding: "2rem", boxShadow: "0 1px 3px rgba(0,0,0,0.05)" }}>
         <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
+
+          <div>
+            <label style={{ fontSize: "0.875rem", fontWeight: 600, color: "#374151", marginBottom: "8px", display: "flex", alignItems: "center", gap: "6px" }}>
+              <Stethoscope size={16} color="#1d4ed8" /> Especialidad
+            </label>
+            <select
+              value={form.specialty}
+              onChange={(e) => setForm({ ...form, specialty: e.target.value })}
+              style={{
+                width: "100%", padding: "11px 14px", border: "1px solid #e2e8f0",
+                borderRadius: "10px", fontSize: "0.95rem", outline: "none",
+                background: "white", color: form.specialty ? "#0f172a" : "#94a3b8",
+                boxSizing: "border-box", cursor: "pointer", appearance: "none",
+              }}
+            >
+              <option value="">Selecciona una especialidad</option>
+              {ESPECIALIDADES.map((esp) => (
+                <option key={esp} value={esp}>{esp}</option>
+              ))}
+            </select>
+          </div>
 
           <div>
             <label style={{ fontSize: "0.875rem", fontWeight: 600, color: "#374151", marginBottom: "8px", display: "flex", alignItems: "center", gap: "6px" }}>
@@ -129,11 +163,11 @@ export default function NuevoTurno() {
             )}
           </div>
 
-          {form.date && form.time && (
+          {form.specialty && form.date && form.time && (
             <div style={{ background: "#eff6ff", border: "1px solid #bfdbfe", borderRadius: "12px", padding: "1rem", display: "flex", alignItems: "center", gap: "10px" }}>
               <CheckCircle size={18} color="#1d4ed8" />
               <p style={{ fontSize: "0.9rem", color: "#1d4ed8", fontWeight: 500 }}>
-                Turno el <strong>{form.date}</strong> a las <strong>{form.time} hs</strong>
+                <strong>{form.specialty}</strong> — {form.date} a las <strong>{form.time} hs</strong>
               </p>
             </div>
           )}

@@ -16,9 +16,9 @@ export const crearTurno = async (req: Request, res: Response, next: NextFunction
     const validationError = validateCreateAppointmentDto(req.body);
     if (validationError) throw new AppError(validationError, 400);
 
-    const { date, time } = req.body;
+    const { date, time, specialty } = req.body;
     const userId = req.user!.id;
-    const turno = await createAppointment(date, time, userId);
+    const turno = await createAppointment(date, time, userId, specialty);
 
     const user = await getUserById(userId);
     if (user) enviarEmailTurnoCreado(user.email, user.name, turno.date, turno.time);

@@ -107,7 +107,7 @@ export default function Home() {
             {[
               { num: "1", icon: <UserPlus size={28} />, titulo: "Crea tu cuenta", texto: "Regístrate con tu email y contraseña en menos de un minuto.", color: "#dbeafe", iconColor: "#1d4ed8" },
               { num: "2", icon: <CalendarDays size={28} />, titulo: "Elige fecha y hora", texto: "Selecciona el día y horario disponible que mejor se adapte a ti.", color: "#dcfce7", iconColor: "#16a34a" },
-              { num: "3", icon: <CheckCircle size={28} />, titulo: "Listo", texto: "Tu turno queda confirmado. Podés consultarlo o cancelarlo cuando quieras.", color: "#f3e8ff", iconColor: "#9333ea" },
+              { num: "3", icon: <CheckCircle size={28} />, titulo: "Listo", texto: "Tu turno queda confirmado. Puedes consultarlo o cancelarlo cuando quieras.", color: "#f3e8ff", iconColor: "#9333ea" },
             ].map((paso) => (
               <motion.div key={paso.num} variants={fadeUp} whileHover={{ y: -6 }} style={{
                 background: "white", borderRadius: "20px", padding: "2rem",

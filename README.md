@@ -255,21 +255,21 @@ Disponible en `http://localhost:5173`.
 
 | Metodo | Endpoint | Auth | Descripcion |
 |---|---|---|---|
-| `POST` | `/api/users/register` | No | Registrar nuevo usuario |
-| `POST` | `/api/users/login` | No | Iniciar sesion — devuelve JWT |
-| `GET` | `/api/users/` | JWT | Obtener todos los usuarios |
-| `GET` | `/api/users/perfil` | JWT | Ver perfil del usuario logueado |
-| `GET` | `/api/users/:id` | JWT | Obtener usuario por ID con sus turnos |
+| `POST` | `/users/register` | No | Registrar nuevo usuario |
+| `POST` | `/users/login` | No | Iniciar sesion — devuelve JWT |
+| `GET` | `/users/` | JWT | Obtener todos los usuarios |
+| `GET` | `/users/perfil` | JWT | Ver perfil del usuario logueado |
+| `GET` | `/users/:id` | JWT | Obtener usuario por ID con sus turnos |
 
 ### Turnos
 
 | Metodo | Endpoint | Auth | Descripcion |
 |---|---|---|---|
-| `POST` | `/api/appointments/schedule` | JWT | Crear turno |
-| `GET` | `/api/appointments/mis-turnos` | JWT | Obtener turnos del usuario logueado |
-| `GET` | `/api/appointments/` | JWT | Obtener todos los turnos |
-| `GET` | `/api/appointments/:id` | JWT | Obtener turno por ID |
-| `PUT` | `/api/appointments/cancel/:id` | JWT | Cancelar turno |
+| `POST` | `/turns/schedule` | JWT | Crear turno |
+| `GET` | `/turns/mis-turnos` | JWT | Obtener turnos del usuario logueado |
+| `GET` | `/turns/` | JWT | Obtener todos los turnos |
+| `GET` | `/turns/:id` | JWT | Obtener turno por ID |
+| `PUT` | `/turns/cancel/:id` | JWT | Cancelar turno |
 
 ---
 

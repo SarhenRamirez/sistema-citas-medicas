@@ -22,16 +22,12 @@ export const createUser = async (data: {
   email: string;
   birthdate?: string;
   nDni?: number;
-  username: string;
   password: string;
 }): Promise<User> => {
   if (await repo().findOne({ where: { email: data.email } }))
     throw new AppError("El email ya esta registrado", 400);
 
-  if (await usernameExists(data.username))
-    throw new AppError("El username ya esta en uso", 400);
-
-  const credentialsId = await crearCredencial(data.username, data.password);
+  const credentialsId = await crearCredencial(data.email, data.password);
 
   const newUser = repo().create({
     name: data.name,

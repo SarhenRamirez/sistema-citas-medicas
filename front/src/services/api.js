@@ -1,7 +1,7 @@
 import axios from "axios";
 
 export const api = axios.create({
-  baseURL: "http://localhost:3000/api",
+  baseURL: "http://localhost:3000",
 });
 
 api.interceptors.response.use(
@@ -31,7 +31,7 @@ export const getToken = () => {
 };
 
 export const registerUser = async (data) => {
-  return api.post("/users/register", data);
+  return api.post("/user/register", data);
 };
 
 export const loginUser = async (data) => {
@@ -39,13 +39,13 @@ export const loginUser = async (data) => {
 };
 
 export const crearTurno = async (turno) => {
-  return api.post("/appointments/schedule", turno);
+  return api.post("/turns/schedule", turno);
 };
 
 export const obtenerMisTurnos = async () => {
-  return api.get("/appointments/mis-turnos");
+  return api.get("/turns/mis-turnos");
 };
 
 export const cancelarTurno = async (id) => {
-  return api.put(`/appointments/cancel/${id}`);
+  return api.put(`/turns/cancel/${id}`);
 };

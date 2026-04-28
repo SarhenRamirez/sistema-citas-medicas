@@ -19,7 +19,8 @@ export const getAppointmentsByUserId = async (userId: number): Promise<Turno[]> 
 export const createAppointment = async (
   date: string,
   time: string,
-  userId: number
+  userId: number,
+  specialty: string
 ): Promise<Turno> => {
   if (!userId) throw new AppError("No se puede crear un turno sin ID de usuario", 400);
 
@@ -45,6 +46,7 @@ export const createAppointment = async (
   const newTurno = repo().create({
     date,
     time,
+    specialty,
     status: "active",
     user: { id: userId } as User,
   });

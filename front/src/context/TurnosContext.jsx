@@ -30,9 +30,9 @@ export function TurnosProvider({ children }) {
     cargarTurnos();
   }, []);
 
-  const agregarTurno = async (fecha, hora, userId) => {
+  const agregarTurno = async (fecha, hora, userId, especialidad) => {
     try {
-      const res = await crearTurno({ date: fecha, time: hora, userId });
+      const res = await crearTurno({ date: fecha, time: hora, specialty: especialidad, userId });
       setTurnos((prev) => [...prev, res.data.turno]);
       return { ok: true };
     } catch (err) {

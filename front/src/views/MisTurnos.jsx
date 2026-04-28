@@ -43,7 +43,7 @@ export default function MisTurnos() {
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "2rem" }}>
         <div>
           <h1 style={{ fontSize: "1.75rem", fontWeight: 800, color: "#0f172a", marginBottom: "4px" }}>Mis turnos</h1>
-          <p style={{ color: "#64748b", fontSize: "0.95rem" }}>Consultá y administrá tus citas médicas</p>
+          <p style={{ color: "#64748b", fontSize: "0.95rem" }}>Consulta y administra tus citas medicas</p>
         </div>
         <NavLink to="/nuevo-turno" style={{
           display: "flex", alignItems: "center", gap: "8px",
@@ -63,7 +63,7 @@ export default function MisTurnos() {
 
         {turnosActivos.length === 0 ? (
           <div style={{ background: "#eff6ff", border: "1px solid #bfdbfe", borderRadius: "14px", padding: "1.5rem", textAlign: "center", color: "#3b82f6", fontSize: "0.95rem" }}>
-            No tenés citas activas actualmente.
+            No tienes citas activas actualmente.
           </div>
         ) : (
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: "1rem" }}>

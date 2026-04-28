@@ -23,14 +23,14 @@ const baseStyle = `
 const header = (color: string) => `
   <div style="background: ${color}; padding: 32px 40px;">
     <h1 style="margin: 0; color: white; font-size: 22px; font-weight: 800;">MediTom</h1>
-    <p style="margin: 6px 0 0; color: rgba(255,255,255,0.8); font-size: 14px;">Gestión de turnos médicos</p>
+    <p style="margin: 6px 0 0; color: rgba(255,255,255,0.8); font-size: 14px;">Gestion de turnos medicos</p>
   </div>
 `;
 
 const footer = `
   <div style="padding: 20px 40px; background: #e2e8f0; text-align: center;">
     <p style="margin: 0; color: #94a3b8; font-size: 12px;">
-      Este es un correo automático, por favor no respondas a este mensaje.
+      Este es un correo automatico, por favor no respondas a este mensaje.
     </p>
   </div>
 `;
@@ -49,21 +49,21 @@ export const enviarEmailBienvenida = (to: string, name: string) => {
     <div style="${baseStyle}">
       ${header("linear-gradient(135deg, #1d4ed8, #4338ca)")}
       <div style="padding: 32px 40px; background: white;">
-        <h2 style="color: #0f172a; font-size: 20px; margin: 0 0 12px;">¡Bienvenido/a, ${name}!</h2>
+        <h2 style="color: #0f172a; font-size: 20px; margin: 0 0 12px;">Bienvenido/a, ${name}!</h2>
         <p style="color: #475569; line-height: 1.7; margin: 0 0 20px;">
           Tu cuenta en <strong>MediTom</strong> fue creada correctamente.
-          Ya podés iniciar sesión y gestionar tus turnos médicos de forma rápida y segura.
+          Ya puedes iniciar sesion y gestionar tus turnos medicos de forma rapida y segura.
         </p>
         <div style="background: #eff6ff; border-left: 4px solid #1d4ed8; padding: 16px 20px; border-radius: 8px;">
           <p style="margin: 0; color: #1d4ed8; font-weight: 600; font-size: 14px;">
-            Accedé desde <a href="http://localhost:5173/login" style="color: #1d4ed8;">MediTom</a>
+            Accede desde <a href="http://localhost:5173/login" style="color: #1d4ed8;">MediTom</a>
           </p>
         </div>
       </div>
       ${footer}
     </div>
   `;
-  return enviarEmail(to, "Bienvenido/a a MediTom 🎉", html);
+  return enviarEmail(to, "Bienvenido/a a MediTom", html);
 };
 
 export const enviarEmailTurnoCreado = (to: string, name: string, fecha: string, hora: string) => {
@@ -73,7 +73,7 @@ export const enviarEmailTurnoCreado = (to: string, name: string, fecha: string, 
       <div style="padding: 32px 40px; background: white;">
         <h2 style="color: #0f172a; font-size: 20px; margin: 0 0 12px;">Turno confirmado</h2>
         <p style="color: #475569; line-height: 1.7; margin: 0 0 24px;">
-          Hola <strong>${name}</strong>, tu turno médico fue agendado correctamente.
+          Hola <strong>${name}</strong>, tu turno medico fue agendado correctamente.
         </p>
         <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 12px; padding: 20px 24px; margin-bottom: 20px;">
           <p style="margin: 0 0 8px; color: #64748b; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">Detalle del turno</p>
@@ -81,13 +81,13 @@ export const enviarEmailTurnoCreado = (to: string, name: string, fecha: string, 
           <p style="margin: 0; color: #0f172a; font-size: 16px;">🕐 <strong>Hora:</strong> ${hora} hs</p>
         </div>
         <p style="color: #94a3b8; font-size: 13px; margin: 0;">
-          Si necesitás cancelar el turno, podés hacerlo desde la aplicación.
+          Si necesitas cancelar el turno, puedes hacerlo desde la aplicacion.
         </p>
       </div>
       ${footer}
     </div>
   `;
-  return enviarEmail(to, "Turno confirmado en MediTom ✅", html);
+  return enviarEmail(to, "Turno confirmado en MediTom", html);
 };
 
 export const enviarEmailTurnoCancelado = (to: string, name: string, fecha: string, hora: string) => {
@@ -97,7 +97,7 @@ export const enviarEmailTurnoCancelado = (to: string, name: string, fecha: strin
       <div style="padding: 32px 40px; background: white;">
         <h2 style="color: #0f172a; font-size: 20px; margin: 0 0 12px;">Turno cancelado</h2>
         <p style="color: #475569; line-height: 1.7; margin: 0 0 24px;">
-          Hola <strong>${name}</strong>, tu turno médico fue cancelado.
+          Hola <strong>${name}</strong>, tu turno medico fue cancelado.
         </p>
         <div style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 12px; padding: 20px 24px; margin-bottom: 20px;">
           <p style="margin: 0 0 8px; color: #64748b; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">Turno cancelado</p>
@@ -105,11 +105,11 @@ export const enviarEmailTurnoCancelado = (to: string, name: string, fecha: strin
           <p style="margin: 0; color: #0f172a; font-size: 16px;">🕐 <strong>Hora:</strong> ${hora} hs</p>
         </div>
         <p style="color: #94a3b8; font-size: 13px; margin: 0;">
-          Podés agendar un nuevo turno cuando quieras desde la aplicación.
+          Puedes agendar un nuevo turno cuando quieras desde la aplicacion.
         </p>
       </div>
       ${footer}
     </div>
   `;
-  return enviarEmail(to, "Turno cancelado en MediTom ❌", html);
+  return enviarEmail(to, "Turno cancelado en MediTom", html);
 };

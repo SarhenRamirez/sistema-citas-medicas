@@ -20,6 +20,9 @@ export class Turno implements IAppointment {
   @Column()
   time!: string;
 
+  @Column({ default: "Medicina general" })
+  specialty!: string;
+
   @Column({ type: "varchar", default: "active" })
   status!: AppointmentStatus;
 

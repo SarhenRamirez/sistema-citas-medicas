@@ -9,12 +9,12 @@ import { checkCredentials } from "../services/credentials.service";
 
 export const register = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { name, email, birthdate, nDni, username, password } = req.body;
+    const { name, email, birthdate, nDni, password } = req.body;
 
-    const userError = validateCreateUserDto({ name, email, birthdate, nDni, username, password });
+    const userError = validateCreateUserDto({ name, email, birthdate, nDni, password });
     if (userError) throw new AppError(userError, 400);
 
-    const newUser = await createUser({ name, email, birthdate, nDni, username, password });
+    const newUser = await createUser({ name, email, birthdate, nDni, password });
 
     enviarEmailBienvenida(newUser.email, newUser.name);
 
@@ -29,12 +29,12 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
 
 export const login = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { username, password } = req.body;
+    const { email, password } = req.body;
 
-    const loginError = validateLoginDto({ username, password });
+    const loginError = validateLoginDto({ email, password });
     if (loginError) throw new AppError(loginError, 400);
 
-    const credentialsId = await checkCredentials(username, password);
+    const credentialsId = await checkCredentials(email, password);
     if (!credentialsId) throw new AppError("Credenciales invalidas", 401);
 
     const user = await getUserByCredentialsId(credentialsId);
