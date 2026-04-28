@@ -1,6 +1,6 @@
 # MediTom 🏥
 
-Sistema de gestion de turnos medicos — aplicacion full stack con autenticacion JWT, servicios en memoria y notificaciones por email.
+Sistema de gestion de turnos medicos — aplicacion full stack con autenticacion JWT, base de datos PostgreSQL y notificaciones por email.
 
 ---
 
@@ -180,7 +180,7 @@ EMAIL_PASS=tu_app_password_de_google
 | `DB_NAME` | Nombre de la base de datos | `meditom` |
 | `JWT_SECRET` | Clave secreta para tokens JWT | `s3cr3t0_l4rg0_xyz` |
 | `EMAIL_USER` | Tu direccion de Gmail | `tucorreo@gmail.com` |
-| `EMAIL_PASS` | App Password de Google (no tu contrasena normal) | `xxxx xxxx xxxx xxxx` |
+| `EMAIL_PASS` | App Password de Google (no tu contraseña ormal) | `xxxx xxxx xxxx xxxx` |
 
 > El archivo `.env` esta incluido en `.gitignore` y **no se sube al repositorio**. Cada persona debe crear el suyo con sus datos.
 
@@ -261,6 +261,24 @@ Disponible en `http://localhost:5173`.
 | `GET` | `/users/perfil` | JWT | Ver perfil del usuario logueado |
 | `GET` | `/users/:id` | JWT | Obtener usuario por ID con sus turnos |
 
+#### POST `/user/register`
+```json
+{
+  "name": "string",
+  "username": "string",
+  "email": "string",
+  "password": "string"
+}
+```
+
+#### POST `/users/login`
+```json
+{
+  "username": "string",
+  "password": "string"
+}
+```
+
 ### Turnos
 
 | Metodo | Endpoint | Auth | Descripcion |
@@ -270,6 +288,15 @@ Disponible en `http://localhost:5173`.
 | `GET` | `/turns/` | JWT | Obtener todos los turnos |
 | `GET` | `/turns/:id` | JWT | Obtener turno por ID |
 | `PUT` | `/turns/cancel/:id` | JWT | Cancelar turno |
+
+#### POST `/turns/schedule`
+```json
+{
+  "date": "YYYY-MM-DD",
+  "time": "HH:mm",
+  "specialty": "string"
+}
+```
 
 ---
 
