@@ -1,60 +1,80 @@
-import { CalendarDays, Clock, XCircle, Stethoscope } from "lucide-react";
+import { motion } from "framer-motion";
+import { CalendarDays, Clock, XCircle } from "lucide-react";
+import { formatearFecha, hoyISO } from "../helpers/fechas";
+import { especialidadInfo } from "../helpers/especialidades";
+
+const ESTADOS = {
+  proximo: { label: "Agendado", clase: "bg-emerald-50 text-emerald-600 ring-emerald-200" },
+  hoy: { label: "Hoy", clase: "bg-blue-50 text-blue-600 ring-blue-200" },
+  finalizado: { label: "Finalizado", clase: "bg-slate-100 text-slate-500 ring-slate-200" },
+  cancelado: { label: "Cancelado", clase: "bg-rose-50 text-rose-500 ring-rose-200" },
+};
+
+const estadoDe = (turno) => {
+  if (turno.status === "cancelled") return "cancelado";
+  const hoy = hoyISO();
+  if (turno.date < hoy) return "finalizado";
+  if (turno.date === hoy) return "hoy";
+  return "proximo";
+};
 
 export default function Card({ turno, onCancelar }) {
-  const isActive = turno.status === "active";
+  const estado = estadoDe(turno);
+  const badge = ESTADOS[estado];
+  const destacado = estado === "proximo" || estado === "hoy";
+  // El backend solo permite cancelar hasta el dia anterior
+  const puedeCancelar = estado === "proximo" && onCancelar;
+  const esp = especialidadInfo(turno.specialty);
 
   return (
-    <div style={{
-      background: isActive ? "white" : "#f8fafc",
-      borderRadius: "16px",
-      padding: "1.5rem",
-      border: "1px solid #e2e8f0",
-      boxShadow: isActive ? "0 1px 3px rgba(0,0,0,0.05)" : "none",
-    }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "1rem" }}>
-        <span style={{ fontSize: "0.75rem", color: "#94a3b8", fontWeight: 600 }}>Turno #{turno.id}</span>
-        <span style={{
-          background: isActive ? "#dcfce7" : "#fee2e2",
-          color: isActive ? "#16a34a" : "#ef4444",
-          fontSize: "0.75rem", fontWeight: 700, padding: "4px 10px", borderRadius: "999px",
-        }}>
-          {isActive ? "Agendado" : "Cancelado"}
+    <motion.div
+      layout
+      variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }}
+      whileHover={destacado ? { y: -4 } : undefined}
+      className={`group relative overflow-hidden rounded-2xl border p-6 transition-shadow ${
+        destacado
+          ? "border-slate-200 bg-white shadow-sm hover:shadow-lg"
+          : "border-slate-200/70 bg-slate-50/80"
+      }`}
+    >
+      {destacado && <div className={`absolute inset-x-0 top-0 h-1 ${esp.bar}`} />}
+
+      <div className="mb-5 flex items-start justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <img
+            src={esp.foto}
+            alt=""
+            className={`h-12 w-12 shrink-0 rounded-xl object-cover ${destacado ? "" : "opacity-50 grayscale"}`}
+          />
+          <div>
+            <p className={`font-bold ${destacado ? "text-slate-900" : "text-slate-500"}`}>{turno.specialty}</p>
+            <p className="text-xs font-medium text-slate-400">Turno #{turno.id}</p>
+          </div>
+        </div>
+        <span className={`shrink-0 rounded-full px-2.5 py-1 text-xs font-bold ring-1 ${badge.clase}`}>
+          {badge.label}
         </span>
       </div>
 
-      <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginBottom: isActive ? "1.25rem" : 0 }}>
-        {turno.specialty && (
-          <div style={{ display: "flex", alignItems: "center", gap: "8px", color: isActive ? "#374151" : "#64748b", fontSize: "0.9rem" }}>
-            <Stethoscope size={15} color={isActive ? "#1d4ed8" : "#94a3b8"} />
-            {isActive ? <strong>{turno.specialty}</strong> : turno.specialty}
-          </div>
-        )}
-        <div style={{ display: "flex", alignItems: "center", gap: "8px", color: isActive ? "#374151" : "#64748b", fontSize: "0.9rem" }}>
-          <CalendarDays size={15} color={isActive ? "#1d4ed8" : "#94a3b8"} />
-          {isActive ? <strong>{turno.date}</strong> : turno.date}
-        </div>
-        <div style={{ display: "flex", alignItems: "center", gap: "8px", color: isActive ? "#374151" : "#64748b", fontSize: "0.9rem" }}>
-          <Clock size={15} color={isActive ? "#1d4ed8" : "#94a3b8"} />
-          {isActive ? <strong>{turno.time} hs</strong> : `${turno.time} hs`}
-        </div>
+      <div className={`space-y-2 text-sm ${destacado ? "text-slate-700" : "text-slate-500"}`}>
+        <p className="flex items-center gap-2.5 font-medium">
+          <CalendarDays size={16} className={destacado ? "text-blue-600" : "text-slate-400"} />
+          {formatearFecha(turno.date)}
+        </p>
+        <p className="flex items-center gap-2.5 font-medium">
+          <Clock size={16} className={destacado ? "text-blue-600" : "text-slate-400"} />
+          {turno.time} hs
+        </p>
       </div>
 
-      {isActive && onCancelar && (
+      {puedeCancelar && (
         <button
           onClick={() => onCancelar(turno.id)}
-          style={{
-            width: "100%", padding: "9px", border: "1px solid #fca5a5",
-            color: "#ef4444", background: "transparent", borderRadius: "8px",
-            fontSize: "0.875rem", fontWeight: 600, cursor: "pointer",
-            display: "flex", alignItems: "center", justifyContent: "center",
-            gap: "6px", transition: "all 0.2s",
-          }}
-          onMouseEnter={e => { e.currentTarget.style.background = "#fef2f2"; }}
-          onMouseLeave={e => { e.currentTarget.style.background = "transparent"; }}
+          className="mt-5 flex w-full items-center justify-center gap-2 rounded-xl border border-rose-200 py-2.5 text-sm font-semibold text-rose-500 transition-colors hover:bg-rose-50"
         >
-          <XCircle size={15} /> Cancelar cita
+          <XCircle size={16} /> Cancelar cita
         </button>
       )}
-    </div>
+    </motion.div>
   );
 }

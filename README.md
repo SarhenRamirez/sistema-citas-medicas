@@ -10,6 +10,18 @@ MediTom permite a los pacientes registrarse, iniciar sesion y gestionar sus cita
 
 ---
 
+## Cuenta demo
+
+Para probar la app sin registrarte usa la cuenta de prueba, o el boton **"Probar demo sin registrarme"** de la pagina de inicio:
+
+| Usuario | Contrasena |
+|---|---|
+| `demo` | `Demo1234` |
+
+El backend crea esta cuenta automaticamente al iniciar (si no existe) y le asegura turnos de ejemplo con fechas futuras, asi la demo nunca queda vacia. La cuenta demo no recibe emails.
+
+---
+
 ## Tecnologias
 
 ### Backend
@@ -166,6 +178,8 @@ JWT_SECRET=una_cadena_larga_aleatoria_y_secreta
 
 EMAIL_USER=tucorreo@gmail.com
 EMAIL_PASS=tu_app_password_de_google
+
+FRONTEND_URL=http://localhost:5173
 ```
 
 **Que significa cada variable?**
@@ -180,7 +194,8 @@ EMAIL_PASS=tu_app_password_de_google
 | `DB_NAME` | Nombre de la base de datos | `meditom` |
 | `JWT_SECRET` | Clave secreta para tokens JWT | `s3cr3t0_l4rg0_xyz` |
 | `EMAIL_USER` | Tu direccion de Gmail | `tucorreo@gmail.com` |
-| `EMAIL_PASS` | App Password de Google (no tu contraseña ormal) | `xxxx xxxx xxxx xxxx` |
+| `EMAIL_PASS` | App Password de Google (no tu contrasena normal) | `xxxx xxxx xxxx xxxx` |
+| `FRONTEND_URL` | URL del frontend, usada en los links de los emails | `http://localhost:5173` |
 
 > El archivo `.env` esta incluido en `.gitignore` y **no se sube al repositorio**. Cada persona debe crear el suyo con sus datos.
 
@@ -217,7 +232,11 @@ cd front
 npm install
 ```
 
-El frontend no requiere variables de entorno. La URL del backend ya esta configurada en `src/services/api.js` apuntando a `http://localhost:3000`.
+En local no necesitas variables de entorno: por defecto el frontend usa `http://localhost:3000`. Para produccion crea `front/.env` (ver `front/.env.example`) con la URL del backend desplegado:
+
+```env
+VITE_API_URL=https://tu-backend.com
+```
 
 ---
 
@@ -259,7 +278,7 @@ Disponible en `http://localhost:5173`.
 | `POST` | `/users/login` | No | Iniciar sesion — devuelve JWT |
 | `GET` | `/users/` | JWT | Obtener todos los usuarios |
 | `GET` | `/users/perfil` | JWT | Ver perfil del usuario logueado |
-| `GET` | `/users/:id` | JWT | Obtener usuario por ID con sus turnos |
+| `GET` | `/users/:id` | JWT | Obtener usuario por ID con sus turnos (solo el propio usuario) |
 
 #### POST `/user/register`
 ```json
@@ -286,8 +305,9 @@ Disponible en `http://localhost:5173`.
 | `POST` | `/turns/schedule` | JWT | Crear turno |
 | `GET` | `/turns/mis-turnos` | JWT | Obtener turnos del usuario logueado |
 | `GET` | `/turns/` | JWT | Obtener todos los turnos |
-| `GET` | `/turns/:id` | JWT | Obtener turno por ID |
+| `GET` | `/turns/:id` | JWT | Obtener turno por ID (solo el dueno del turno) |
 | `PUT` | `/turns/cancel/:id` | JWT | Cancelar turno |
+| `GET` | `/health` | No | Verifica que el servidor este activo |
 
 #### POST `/turns/schedule`
 ```json
@@ -406,6 +426,12 @@ El sistema envia emails automaticos en los siguientes eventos:
 
 ---
 
+## Creditos de imagenes
+
+Las fotos de `front/src/assets/fotos/` son de [Unsplash](https://unsplash.com) y se usan bajo la [Licencia de Unsplash](https://unsplash.com/license), que permite uso gratuito, incluso comercial, sin atribucion obligatoria.
+
+---
+
 ## Autor
 
-Desarrollado por **Sarhen Ramirez** — Proyecto PM3
+Desarrollado por **Sarhen Ramirez** — [github.com/SarhenRamirez](https://github.com/SarhenRamirez)

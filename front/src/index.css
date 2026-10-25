@@ -1,3 +1,65 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Grillas responsivas usadas en las vistas con estilos inline */
+.grid-4 { display: grid; gap: 1.5rem; grid-template-columns: repeat(4, 1fr); }
+.grid-3 { display: grid; gap: 1.5rem; grid-template-columns: repeat(3, 1fr); }
+
+@media (max-width: 900px) {
+  .grid-4 { grid-template-columns: repeat(2, 1fr); }
+  .grid-3 { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 480px) {
+  .grid-4 { gap: 1rem; }
+}
+
+/* Panel lateral de login/registro: solo en pantallas medianas o mas */
+.auth-panel { display: none; }
+@media (min-width: 768px) {
+  .auth-panel { display: flex; }
+}
+
+/* Layout del panel privado */
+.app-main { flex: 1; margin-left: 260px; padding: 2rem; min-width: 0; }
+.app-sidebar { transform: translateX(0); transition: transform 0.3s ease; }
+.app-topbar { display: none; }
+.app-backdrop { display: none; }
+
+@media (max-width: 900px) {
+  .app-main { margin-left: 0; padding: 5.5rem 1rem 2rem; }
+  .app-sidebar { transform: translateX(-100%); }
+  .app-sidebar.open { transform: translateX(0); box-shadow: 0 0 40px rgba(15, 23, 42, 0.25); }
+  .app-topbar { display: flex; }
+  .app-backdrop.open { display: block; }
+}
+
+/* En celulares los botones del navbar muestran solo el icono */
+@media (max-width: 560px) {
+  .nav-label { display: none; }
+  .nav-divider { display: none; }
+}
+
+.react-datepicker-wrapper { width: 100%; }
+
+html { scroll-behavior: smooth; }
+body { -webkit-font-smoothing: antialiased; }
+
+/* Bordes del carrusel de especialidades que se desvanecen */
+.mask-fade-x {
+  mask-image: linear-gradient(90deg, transparent, black 12%, black 88%, transparent);
+  -webkit-mask-image: linear-gradient(90deg, transparent, black 12%, black 88%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .animate-float, .animate-float-slow, .animate-marquee { animation: none !important; }
+}
+
+/* Foco visible y consistente en los formularios (los estilos inline no lo permiten) */
+input:focus, select:focus, textarea:focus {
+  border-color: #3b82f6 !important;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+  transition: box-shadow 0.2s, border-color 0.2s;
+}

@@ -4,6 +4,13 @@ import { LogIn, UserPlus } from "lucide-react";
 import { useState, useEffect } from "react";
 import logo from "../assets/logo.png";
 
+const SECCIONES = [
+  { href: "#como-funciona", label: "Como funciona" },
+  { href: "#beneficios", label: "Beneficios" },
+  { href: "#especialidades", label: "Especialidades" },
+  { href: "#preguntas", label: "Preguntas" },
+];
+
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
@@ -12,7 +19,8 @@ export default function Navbar() {
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
-    window.addEventListener("scroll", handleScroll);
+    handleScroll();
+    window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
@@ -23,78 +31,48 @@ export default function Navbar() {
       initial={{ y: -60, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.5, ease: "easeOut" }}
-      style={{
-        position: "fixed", top: 0, left: 0, right: 0, zIndex: 50,
-        transition: "all 0.3s ease",
-        background: scrolled ? "rgba(255,255,255,0.95)" : "transparent",
-        backdropFilter: scrolled ? "blur(10px)" : "none",
-        boxShadow: scrolled ? "0 2px 20px rgba(0,0,0,0.1)" : "none",
-        borderBottom: scrolled ? "1px solid rgba(255,255,255,0.2)" : "none",
-      }}
+      className={`fixed inset-x-0 top-0 z-50 transition-all duration-300 ${
+        scrolled ? "border-b border-slate-200 bg-white/90 shadow-sm backdrop-blur-xl" : "bg-transparent"
+      }`}
     >
-      <nav style={{
-        maxWidth: "1152px", margin: "0 auto", padding: "0 1.5rem",
-        height: "72px", display: "flex", alignItems: "center", justifyContent: "space-between"
-      }}>
-
-        <NavLink to="/" style={{ display: "flex", alignItems: "center", gap: "12px", textDecoration: "none" }}>
-          <motion.img
-            src={logo} alt="MediTom"
-            style={{ height: "46px", width: "auto" }}
-            whileHover={{ scale: 1.05 }}
-            transition={{ type: "spring", stiffness: 300 }}
-          />
-          <motion.span
-            style={{ fontSize: "1.3rem", fontWeight: 700, color: scrolled ? "#1d4ed8" : "white", transition: "color 0.3s ease" }}
-            whileHover={{ scale: 1.03 }}
-          >
-            MediTom
-          </motion.span>
+      <nav className="mx-auto flex h-[72px] max-w-6xl items-center justify-between px-4 sm:px-6">
+        <NavLink to="/" className="group flex items-center gap-3">
+          <span className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-xl border border-slate-200 bg-white transition-transform group-hover:scale-105">
+            <img src={logo} alt="" className="h-9 w-9 object-contain" />
+          </span>
+          <span className="text-xl font-extrabold tracking-tight text-slate-900">MediTom</span>
         </NavLink>
 
-        <motion.div
-          style={{ display: "flex", alignItems: "center", gap: "12px" }}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.2 }}
-        >
-          <div style={{
-            width: "1px", height: "28px",
-            background: scrolled ? "#e2e8f0" : "rgba(255,255,255,0.3)",
-            marginRight: "4px", transition: "background 0.3s ease"
-          }} />
+        <div className="hidden items-center gap-1 lg:flex">
+          {SECCIONES.map((s) => (
+            <a
+              key={s.href}
+              href={s.href}
+              className="rounded-lg px-3.5 py-2 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-900"
+            >
+              {s.label}
+            </a>
+          ))}
+        </div>
 
-          <NavLink to="/login" style={{
-            display: "flex", alignItems: "center", gap: "8px",
-            padding: "10px 20px", borderRadius: "10px", textDecoration: "none",
-            fontSize: "0.9rem", fontWeight: 600, transition: "all 0.2s",
-            color: scrolled ? "#1d4ed8" : "white",
-            border: scrolled ? "2px solid #1d4ed8" : "2px solid rgba(255,255,255,0.8)",
-            background: scrolled ? "rgba(29,78,216,0.06)" : "rgba(255,255,255,0.15)",
-            backdropFilter: "blur(4px)"
-          }}
-            onMouseEnter={e => { e.currentTarget.style.background = scrolled ? "rgba(29,78,216,0.12)" : "rgba(255,255,255,0.25)"; }}
-            onMouseLeave={e => { e.currentTarget.style.background = scrolled ? "rgba(29,78,216,0.06)" : "rgba(255,255,255,0.15)"; }}
+        <div className="flex items-center gap-2 sm:gap-3">
+          <NavLink
+            to="/login"
+            aria-label="Iniciar sesion"
+            className="flex items-center gap-2 rounded-xl px-3.5 py-2.5 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-100 hover:text-slate-900 sm:px-4"
           >
             <LogIn size={16} />
-            Iniciar sesion
+            <span className="nav-label">Iniciar sesion</span>
           </NavLink>
-
-          <NavLink to="/register" style={{
-            display: "flex", alignItems: "center", gap: "8px",
-            padding: "10px 20px", borderRadius: "10px", textDecoration: "none",
-            fontSize: "0.9rem", fontWeight: 600, transition: "all 0.2s",
-            color: scrolled ? "white" : "#1d4ed8",
-            background: scrolled ? "#1d4ed8" : "white",
-            boxShadow: scrolled ? "0 2px 8px rgba(29,78,216,0.3)" : "0 2px 8px rgba(0,0,0,0.15)"
-          }}
-            onMouseEnter={e => { e.currentTarget.style.background = scrolled ? "#1e40af" : "#f0f7ff"; }}
-            onMouseLeave={e => { e.currentTarget.style.background = scrolled ? "#1d4ed8" : "white"; }}
+          <NavLink
+            to="/register"
+            aria-label="Registrarse"
+            className="flex items-center gap-2 rounded-xl bg-blue-600 px-3.5 py-2.5 text-sm font-bold text-white transition-colors hover:bg-blue-700 sm:px-5"
           >
             <UserPlus size={16} />
-            Registrarse
+            <span className="nav-label">Registrarse</span>
           </NavLink>
-        </motion.div>
+        </div>
       </nav>
     </motion.header>
   );

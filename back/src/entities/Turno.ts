@@ -29,7 +29,7 @@ export class Turno implements IAppointment {
   @CreateDateColumn()
   creadoEn!: Date;
 
-  @ManyToOne(() => User, (user) => user.turnos, { eager: true })
+  @ManyToOne(() => User, (user) => user.turnos)
   user!: User;
 
   @RelationId((turno: Turno) => turno.user)

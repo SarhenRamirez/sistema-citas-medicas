@@ -1,38 +1,43 @@
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useState, useEffect, useCallback } from "react";
 import {
   crearTurno,
   obtenerMisTurnos,
   cancelarTurno as cancelarTurnoApi,
   getToken,
 } from "../services/api";
+import { useUser } from "./UserContext";
 
 const TurnosContext = createContext();
 
 export function TurnosProvider({ children }) {
+  const { user } = useUser();
   const [turnos, setTurnos] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const cargarTurnos = async () => {
+  const cargarTurnos = useCallback(async () => {
     if (!getToken()) return;
     try {
       setLoading(true);
+      setError("");
       const res = await obtenerMisTurnos();
       setTurnos(res.data);
-    } catch (err) {
+    } catch {
       setError("Error al cargar los turnos");
     } finally {
       setLoading(false);
     }
-  };
-
-  useEffect(() => {
-    cargarTurnos();
   }, []);
 
-  const agregarTurno = async (fecha, hora, userId, especialidad) => {
+  // Recarga al iniciar sesion y limpia al cerrarla, asi no se mezclan turnos entre cuentas
+  useEffect(() => {
+    if (user) cargarTurnos();
+    else setTurnos([]);
+  }, [user?.id, cargarTurnos]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const agregarTurno = async (fecha, hora, especialidad) => {
     try {
-      const res = await crearTurno({ date: fecha, time: hora, specialty: especialidad, userId });
+      const res = await crearTurno({ date: fecha, time: hora, specialty: especialidad });
       setTurnos((prev) => [...prev, res.data.turno]);
       return { ok: true };
     } catch (err) {

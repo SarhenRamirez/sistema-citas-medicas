@@ -14,4 +14,5 @@ export const AppDataSource = new DataSource({
   synchronize: true,
   logging: false,
   entities: [User, Turno, Credential],
+  ssl: envs.DB_HOST === "localhost" ? false : { rejectUnauthorized: false },
 });

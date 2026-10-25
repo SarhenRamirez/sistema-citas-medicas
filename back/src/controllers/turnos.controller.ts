@@ -42,6 +42,7 @@ export const obtenerTurnoPorId = async (req: Request, res: Response, next: NextF
   try {
     const turno = await getAppointmentById(Number(req.params.id));
     if (!turno) throw new AppError("Turno no encontrado", 404);
+    if (turno.userId !== req.user!.id) throw new AppError("No autorizado", 403);
     res.json(turno);
   } catch (error) {
     next(error);

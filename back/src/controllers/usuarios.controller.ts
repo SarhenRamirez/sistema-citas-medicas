@@ -13,7 +13,10 @@ export const getAllUsersController = async (_req: Request, res: Response, next: 
 
 export const getUserByIdController = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const user = await getUserById(Number(req.params.id));
+    const id = Number(req.params.id);
+    if (id !== req.user!.id) throw new AppError("No autorizado", 403);
+
+    const user = await getUserById(id);
     if (!user) throw new AppError("Usuario no encontrado", 404);
 
     const turns = await getAppointmentsByUserId(user.id);

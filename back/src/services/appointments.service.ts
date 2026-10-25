@@ -14,7 +14,7 @@ export const getAppointmentById = async (id: number): Promise<Turno | undefined>
 };
 
 export const getAppointmentsByUserId = async (userId: number): Promise<Turno[]> =>
-  repo().find({ where: { user: { id: userId } } });
+  repo().find({ where: { user: { id: userId } }, order: { date: "ASC", time: "ASC" } });
 
 export const createAppointment = async (
   date: string,
@@ -60,7 +60,7 @@ export const createAppointment = async (
 export const cancelAppointment = async (id: number, userId: number): Promise<Turno> => {
   const turno = await repo().findOne({ where: { id } });
   if (!turno) throw new AppError("Turno no encontrado", 404);
-  if (!turno.user || turno.user.id !== userId) throw new AppError("No autorizado", 403);
+  if (turno.userId !== userId) throw new AppError("No autorizado", 403);
   if (turno.status === "cancelled") throw new AppError("El turno ya esta cancelado", 400);
 
   const [anio, mes, dia] = turno.date.split("-").map(Number);
