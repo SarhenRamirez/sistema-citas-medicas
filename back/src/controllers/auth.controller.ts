@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
+import envs from "../config/envs";
 import { AppError } from "../middleware/error.middleware";
 import { enviarEmailBienvenida } from "../services/email.service";
 import { validateCreateUserDto } from "../dtos/User.dto";
@@ -40,10 +41,7 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
     const user = await getUserByCredentialsId(credentialsId);
     if (!user) throw new AppError("Credenciales invalidas", 401);
 
-    const secret = process.env.JWT_SECRET;
-    if (!secret) throw new Error("JWT_SECRET no definido");
-
-    const token = jwt.sign({ id: user.id, email: user.email }, secret, { expiresIn: "1d" });
+    const token = jwt.sign({ id: user.id, email: user.email }, envs.JWT_SECRET, { expiresIn: "1d" });
 
     res.json({
       login: true,

@@ -1,5 +1,6 @@
 import nodemailer from "nodemailer";
 import envs from "../config/envs";
+import { isDemoEmail } from "../config/demo";
 
 const transporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
@@ -37,6 +38,7 @@ const footer = `
 
 const enviarEmail = async (to: string, subject: string, html: string) => {
   if (!envs.EMAIL_USER || !envs.EMAIL_PASS) return;
+  if (isDemoEmail(to)) return;
   try {
     await transporter.sendMail({ from: `"MediTom" <${envs.EMAIL_USER}>`, to, subject, html });
   } catch (err) {
@@ -56,7 +58,7 @@ export const enviarEmailBienvenida = (to: string, name: string) => {
         </p>
         <div style="background: #eff6ff; border-left: 4px solid #1d4ed8; padding: 16px 20px; border-radius: 8px;">
           <p style="margin: 0; color: #1d4ed8; font-weight: 600; font-size: 14px;">
-            Accede desde <a href="http://localhost:5173/login" style="color: #1d4ed8;">MediTom</a>
+            Accede desde <a href="${envs.FRONTEND_URL}/login" style="color: #1d4ed8;">MediTom</a>
           </p>
         </div>
       </div>
