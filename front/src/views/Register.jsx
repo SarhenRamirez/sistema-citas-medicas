@@ -1,17 +1,25 @@
 import { useState } from "react";
-import { NavLink, useNavigate, Navigate } from "react-router-dom";
+import { NavLink, Navigate } from "react-router-dom";
 import { useUser } from "../context/UserContext";
+import { useIniciarSesion } from "../hooks/useIniciarSesion";
 import { registerUser } from "../services/api";
-import { UserPlus, Mail, Lock, User, AtSign, Stethoscope, CalendarDays, CheckCircle } from "lucide-react";
-import logo from "../assets/logo.png";
+import AuthPanel from "../components/AuthPanel";
+import { UserPlus, Mail, Lock, User, AtSign, ArrowLeft } from "lucide-react";
+
+const CAMPOS = [
+  { name: "name", placeholder: "Nombre completo", type: "text", autoComplete: "name", icon: <User size={18} /> },
+  { name: "username", placeholder: "Nombre de usuario", type: "text", autoComplete: "username", icon: <AtSign size={18} /> },
+  { name: "email", placeholder: "correo@ejemplo.com", type: "email", autoComplete: "email", icon: <Mail size={18} /> },
+  { name: "password", placeholder: "Contraseña (minimo 6 caracteres)", type: "password", autoComplete: "new-password", icon: <Lock size={18} /> },
+  { name: "confirmPassword", placeholder: "Confirmar contraseña", type: "password", autoComplete: "new-password", icon: <Lock size={18} /> },
+];
 
 export default function Register() {
   const [form, setForm] = useState({ name: "", username: "", email: "", password: "", confirmPassword: "" });
   const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
   const { user } = useUser();
+  const { iniciarSesion, error: loginError } = useIniciarSesion();
 
   if (user) return <Navigate to="/mis-turnos" replace />;
 
@@ -19,8 +27,12 @@ export default function Register() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!form.name || !form.username || !form.email || !form.password || !form.confirmPassword) {
+    if (Object.values(form).some((v) => !v.trim())) {
       setError("Todos los campos son obligatorios");
+      return;
+    }
+    if (form.password.length < 6) {
+      setError("La contrasena debe tener al menos 6 caracteres");
       return;
     }
     if (form.password !== form.confirmPassword) {
@@ -30,10 +42,9 @@ export default function Register() {
     try {
       setLoading(true);
       setError("");
-      setSuccess("");
       await registerUser({ name: form.name, username: form.username, email: form.email, password: form.password });
-      setSuccess("Cuenta creada correctamente. Redirigiendo...");
-      setTimeout(() => navigate("/login"), 1500);
+      // Entra directo al panel despues de registrarse
+      await iniciarSesion(form.username, form.password);
     } catch (err) {
       setError(err.response?.data?.message || "Error al crear la cuenta");
     } finally {
@@ -41,81 +52,44 @@ export default function Register() {
     }
   };
 
+  const mensajeError = error || loginError;
+
   return (
     <div style={{ minHeight: "100vh", display: "flex" }}>
-      <div style={{
-        width: "45%", background: "linear-gradient(135deg, #1d4ed8 0%, #4338ca 100%)",
-        display: "flex", flexDirection: "column", justifyContent: "center",
-        padding: "3rem", position: "relative", overflow: "hidden"
-      }} className="hidden md:flex">
-        <div style={{
-          position: "absolute", inset: 0, opacity: 0.1,
-          backgroundImage: "radial-gradient(circle, white 1px, transparent 1px)",
-          backgroundSize: "28px 28px", pointerEvents: "none"
-        }} />
-        <div style={{ position: "relative" }}>
-          <NavLink to="/" style={{ display: "flex", alignItems: "center", gap: "10px", textDecoration: "none", marginBottom: "3rem" }}>
-            <img src={logo} alt="MediTom" style={{ height: "36px" }} />
-            <span style={{ fontSize: "1.3rem", fontWeight: 700, color: "white" }}>MediTom</span>
-          </NavLink>
-          <h2 style={{ fontSize: "2rem", fontWeight: 800, color: "white", lineHeight: 1.2, marginBottom: "1rem" }}>
-            Comienza hoy, es gratis
-          </h2>
-          <p style={{ color: "#bfdbfe", fontSize: "1rem", lineHeight: 1.7, marginBottom: "3rem" }}>
-            Crea tu cuenta y accede a todos los beneficios de MediTom sin costo alguno.
-          </p>
-          <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
-            {[
-              { icon: <Stethoscope size={18} />, texto: "Turnos medicos online" },
-              { icon: <CalendarDays size={18} />, texto: "Agenda disponible 24/7" },
-              { icon: <CheckCircle size={18} />, texto: "Confirmacion inmediata" },
-            ].map((item) => (
-              <div key={item.texto} style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-                <div style={{ width: 36, height: 36, borderRadius: "50%", background: "rgba(255,255,255,0.15)", display: "flex", alignItems: "center", justifyContent: "center", color: "white", flexShrink: 0 }}>
-                  {item.icon}
-                </div>
-                <span style={{ color: "#e0f2fe", fontSize: "0.95rem", fontWeight: 500 }}>{item.texto}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
+      <AuthPanel
+        titulo="Comienza hoy, es gratis"
+        texto="Crea tu cuenta y agenda tu primera cita medica en menos de un minuto."
+      />
 
-      <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", padding: "2rem", background: "#f8fafc" }}>
+      <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", padding: "2rem 1.25rem", background: "#ffffff" }}>
         <div style={{ width: "100%", maxWidth: "420px" }}>
+          <NavLink to="/" style={{ display: "inline-flex", alignItems: "center", gap: "6px", color: "#64748b", fontSize: "0.85rem", textDecoration: "none", marginBottom: "1.5rem" }}>
+            <ArrowLeft size={16} /> Volver al inicio
+          </NavLink>
+
           <div style={{ marginBottom: "2rem" }}>
             <h1 style={{ fontSize: "1.75rem", fontWeight: 800, color: "#0f172a", marginBottom: "8px" }}>Crear cuenta</h1>
             <p style={{ color: "#64748b", fontSize: "0.95rem" }}>Completa el formulario para registrarte</p>
           </div>
 
-          {error && (
-            <div style={{ marginBottom: "1.5rem", padding: "12px 16px", borderRadius: "10px", background: "#fef2f2", border: "1px solid #fecaca", color: "#dc2626", fontSize: "0.875rem", display: "flex", alignItems: "center", gap: "8px" }}>
-              <span>⚠</span> {error}
-            </div>
-          )}
-
-          {success && (
-            <div style={{ marginBottom: "1.5rem", padding: "12px 16px", borderRadius: "10px", background: "#f0fdf4", border: "1px solid #bbf7d0", color: "#16a34a", fontSize: "0.875rem", display: "flex", alignItems: "center", gap: "8px" }}>
-              <CheckCircle size={16} /> {success}
+          {mensajeError && (
+            <div role="alert" style={{ marginBottom: "1.5rem", padding: "12px 16px", borderRadius: "10px", background: "#fef2f2", border: "1px solid #fecaca", color: "#dc2626", fontSize: "0.875rem", display: "flex", alignItems: "center", gap: "8px" }}>
+              <span>⚠</span> {mensajeError}
             </div>
           )}
 
           <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-            {[
-              { name: "name", placeholder: "Nombre completo", type: "text", icon: <User size={18} /> },
-              { name: "username", placeholder: "Nombre de usuario", type: "text", icon: <AtSign size={18} /> },
-              { name: "email", placeholder: "correo@ejemplo.com", type: "email", icon: <Mail size={18} /> },
-              { name: "password", placeholder: "Contraseña", type: "password", icon: <Lock size={18} /> },
-              { name: "confirmPassword", placeholder: "Confirmar contraseña", type: "password", icon: <Lock size={18} /> },
-            ].map((field) => (
+            {CAMPOS.map((field) => (
               <div key={field.name} style={{ position: "relative" }}>
-                <div style={{ position: "absolute", left: "14px", top: "50%", transform: "translateY(-50%)", color: "#94a3b8" }}>
+                <div style={{ position: "absolute", left: "14px", top: "50%", transform: "translateY(-50%)", color: "#94a3b8", display: "flex" }}>
                   {field.icon}
                 </div>
                 <input
                   name={field.name}
                   type={field.type}
                   placeholder={field.placeholder}
+                  aria-label={field.placeholder}
+                  autoComplete={field.autoComplete}
                   value={form[field.name]}
                   onChange={handleChange}
                   disabled={loading}
@@ -127,7 +101,7 @@ export default function Register() {
             <button
               type="submit"
               disabled={loading}
-              style={{ width: "100%", padding: "13px", background: loading ? "#93c5fd" : "#1d4ed8", color: "white", fontWeight: 700, borderRadius: "10px", border: "none", fontSize: "1rem", cursor: loading ? "not-allowed" : "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", transition: "all 0.2s", marginTop: "8px", boxShadow: "0 4px 12px rgba(29,78,216,0.3)" }}
+              style={{ width: "100%", padding: "13px", background: loading ? "#93c5fd" : "#2563eb", color: "white", fontWeight: 700, borderRadius: "12px", border: "none", fontSize: "1rem", cursor: loading ? "not-allowed" : "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", transition: "all 0.2s", marginTop: "8px", boxShadow: "0 1px 2px rgba(15,23,42,0.08)" }}
             >
               <UserPlus size={18} />
               {loading ? "Creando cuenta..." : "Crear cuenta"}

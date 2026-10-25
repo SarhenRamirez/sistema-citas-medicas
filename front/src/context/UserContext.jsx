@@ -2,11 +2,21 @@ import { createContext, useContext, useState, useEffect } from "react";
 
 const UserContext = createContext();
 
+const DEMO_EMAIL = "demo@meditom.app";
+
+// La foto se guarda aparte por usuario para no perderla al cerrar sesion
+const avatarKey = (id) => `avatar_${id}`;
+
+const leerUsuario = () => {
+  try {
+    return JSON.parse(localStorage.getItem("user"));
+  } catch {
+    return null;
+  }
+};
+
 export function UserProvider({ children }) {
-  const [user, setUser] = useState(() => {
-    const storedUser = localStorage.getItem("user");
-    return storedUser ? JSON.parse(storedUser) : null;
-  });
+  const [user, setUser] = useState(leerUsuario);
 
   const guardarUsuario = (data) => {
     setUser(data);
@@ -18,7 +28,7 @@ export function UserProvider({ children }) {
       id: data.id,
       name: data.name,
       email: data.email,
-      avatar: null,
+      avatar: localStorage.getItem(avatarKey(data.id)),
     });
   };
 
@@ -34,19 +44,26 @@ export function UserProvider({ children }) {
     return () => window.removeEventListener("session-expired", handleSessionExpired);
   }, []);
 
-  const actualizarFoto = (file) => {
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      const base64 = reader.result;
-      const updatedUser = { ...user, avatar: base64 };
-      setUser(updatedUser);
-      localStorage.setItem("user", JSON.stringify(updatedUser));
-    };
-    reader.readAsDataURL(file);
-  };
+  const actualizarFoto = (file) =>
+    new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        try {
+          localStorage.setItem(avatarKey(user.id), reader.result);
+          guardarUsuario({ ...user, avatar: reader.result });
+          resolve();
+        } catch (err) {
+          reject(err);
+        }
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+
+  const isDemo = user?.email === DEMO_EMAIL;
 
   return (
-    <UserContext.Provider value={{ user, login, logout, actualizarFoto }}>
+    <UserContext.Provider value={{ user, isDemo, login, logout, actualizarFoto }}>
       {children}
     </UserContext.Provider>
   );
